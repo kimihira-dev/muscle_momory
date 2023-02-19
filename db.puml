@@ -1,0 +1,43 @@
+@startuml
+
+entity Part as "Part\n部位" {
+  id : int [PK]
+  --
+  name : text
+  recovery_time : int
+  --
+  create_time : Datetime
+  update_time : Datetime
+}
+
+entity Menu as "Menu\nメニュー" {
+  id : int [PK]
+  --
+  name : text
+  unit : int
+  --
+  create_time : Datetime
+  update_time : Datetime
+}
+
+entity PartMenu as "PartMenu\n部位・メニュー関連" {
+  part_id : int [FK]
+  menu_id : int [FK]
+}
+
+entity WorkOutLog as "WorkOut\nトレーニングログ" {
+  id : int [PK]
+  --
+  menu_id : int [FK]
+  --
+  unit : int
+  volume : int
+  --
+  create_time : Datetime
+  update_time : Datetime
+}
+
+Part ||..o{ PartMenu
+Menu ||..o{ PartMenu
+Menu ||..o{ WorkOutLog
+@enduml
