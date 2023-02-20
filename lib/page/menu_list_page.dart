@@ -39,9 +39,9 @@ class _MenuListPageState extends State<MenuListPage> {
         actions: [
           IconButton(
               onPressed: () {
-                // メニュー編集画面へ
+                // メニュー追加画面へ
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MenuEdit(_updateList, partId: widget.part.id,)));
+                    MaterialPageRoute(builder: (context) => MenuEditPage(_updateList, partId: widget.part.id,)));
               },
               icon: Icon(Icons.add)),
         ],
@@ -53,8 +53,13 @@ class _MenuListPageState extends State<MenuListPage> {
               ListTile(
                 title: Text(menuList[index].name),
                 onTap: () {
-                  // Navigator.push(context, MaterialPageRoute(builder: (context)  => PartMenu(snapshot.data![index])));
                 },
+                trailing: IconButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)  => MenuEditPage(_updateList, menu: menuList[index], partId: widget.part.id)));
+                  },
+                  icon: Icon(Icons.edit),
+                ),
               ),
               const Divider(
                 height: 0,

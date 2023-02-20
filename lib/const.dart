@@ -7,4 +7,15 @@ enum WorkoutUnit {
   const WorkoutUnit(this.id, this.name);
   final int id;
   final String name;
+
+  factory WorkoutUnit.fromId(id) {
+    var result = WorkoutUnit.kg;
+    for (var element in WorkoutUnit.values) {
+      if (element.id == id) {
+        result = element;
+        break;
+      }
+    };
+    return result;
+  }
 }
