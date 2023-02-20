@@ -27,7 +27,7 @@ class DbFactory {
       create table ${MenuDaoHelper.tableName} (
         ${MenuDaoHelper.columnId} integer primary key autoincrement,
         ${MenuDaoHelper.columnName} text,
-        ${MenuDaoHelper.columnWorkOutUnit} int
+        ${MenuDaoHelper.columnType} int
         );
       ''');
       await db.execute('''

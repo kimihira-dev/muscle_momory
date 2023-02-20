@@ -76,8 +76,8 @@ class MenuDaoHelper {
   static const tableName = 'menu';
   static const columnId = 'id';
   static const columnName = 'name';
-  static const columnWorkOutUnit = 'unit';
-  static const columns = [columnId, columnName, columnName, columnWorkOutUnit];
+  static const columnType = 'type';
+  static const columns = [columnId, columnName, columnName, columnType];
 
   final DbFactory _factory;
   late Database _db;
@@ -87,7 +87,7 @@ class MenuDaoHelper {
   Future<int> insert(Menu menu) async {
     return await _db.insert(tableName, {
       columnName: menu.name,
-      columnWorkOutUnit: menu.workOutUnit.id,
+      columnType: menu.type.id,
     });
   }
 
@@ -96,7 +96,7 @@ class MenuDaoHelper {
         tableName,
         {
           columnName: menu.name,
-          columnWorkOutUnit: menu.workOutUnit.id,
+          columnType: menu.type.id,
         },
         where: '$columnId = ?',
         whereArgs: [menu.id]);
@@ -108,7 +108,7 @@ class MenuDaoHelper {
 
     if (maps.isNotEmpty) {
       return Menu(maps.first[columnId], maps.first[columnName],
-          WorkoutUnit.fromId(maps.first[columnWorkOutUnit]), []);
+          MenuType.fromId(maps.first[columnType]), []);
     }
     return null;
   }
@@ -121,7 +121,7 @@ class MenuDaoHelper {
       maps.forEach((element) {
         // 部位を取得
         result.add(Menu(element[columnId], element[columnName],
-            WorkoutUnit.fromId(element[columnWorkOutUnit]), []));
+            MenuType.fromId(element[columnType]), []));
       });
     }
     return result;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:muscle_memory/db/menu_dao.dart';
 import 'package:muscle_memory/page/menu_edit_page.dart';
 import 'package:muscle_memory/entity/part.dart';
+import 'package:muscle_memory/page/workout_add_page.dart';
 
 import '../db/db_factory.dart';
 import '../entity/menu.dart';
@@ -51,8 +52,10 @@ class _MenuListPageState extends State<MenuListPage> {
           itemBuilder: (context, index) {
             return Column(children: [
               ListTile(
+                leading: Icon(Icons.play_arrow),
                 title: Text(menuList[index].name),
                 onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)  => WorkoutAddPage(menuList[index])));
                 },
                 trailing: IconButton(
                   onPressed: () {

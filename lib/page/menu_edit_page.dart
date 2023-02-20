@@ -31,7 +31,7 @@ class _MenuEditPageState extends State<MenuEditPage> {
 
   // Formの値
   var menu_name = '';
-  var workoutUnitIndex = WorkoutUnit.kg.index;
+  var typeIndex = MenuType.free.index;
   final List<int> _partIndexes = [];
 
   _MenuEditPageState(partId, menu) {
@@ -47,7 +47,7 @@ class _MenuEditPageState extends State<MenuEditPage> {
       _menu = menu;
     }
     menu_name = _menu.name;
-    workoutUnitIndex = _menu.workOutUnit.index;
+    typeIndex = _menu.type.index;
 
     _getPartList(partId);
   }
@@ -104,15 +104,15 @@ class _MenuEditPageState extends State<MenuEditPage> {
               Wrap(
                 // list of length 3
                 children: List.generate(
-                  WorkoutUnit.values.length,
+                  MenuType.values.length,
                   (int index) {
                     return ChoiceChip(
-                      label: Text(WorkoutUnit.values[index].name),
+                      label: Text(MenuType.values[index].name),
                       selectedColor: Colors.green,
-                      selected: workoutUnitIndex == index,
+                      selected: typeIndex == index,
                       onSelected: (bool selected) {
                         setState(() {
-                          workoutUnitIndex = index;
+                          typeIndex = index;
                         });
                       },
                     );
@@ -161,7 +161,7 @@ class _MenuEditPageState extends State<MenuEditPage> {
                     } else {
                       // 登録
                       _menu.name = menu_name;
-                      _menu.workOutUnit = WorkoutUnit.values[workoutUnitIndex];
+                      _menu.type = MenuType.values[typeIndex];
                       _menu.parts.clear();
                       _partIndexes.forEach(
                               (element) => _menu.parts.add(_partList[element]));

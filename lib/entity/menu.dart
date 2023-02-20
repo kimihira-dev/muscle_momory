@@ -5,11 +5,11 @@ import '../const.dart';
 class Menu {
   int? _id;
   String name = '';
-  WorkoutUnit workOutUnit = WorkoutUnit.kg;
+  MenuType type = MenuType.free;
   List<Part> parts = [];
 
   /// コンストラクタ
-  Menu(this._id, this.name, this.workOutUnit, this.parts);
+  Menu(this._id, this.name, this.type, this.parts);
   /// 空データ用コンストラクタ
   Menu.empty();
 
