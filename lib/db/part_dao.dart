@@ -15,8 +15,6 @@ class PartDao {
       await helper.open();
 
       result = await helper.fetch(id);
-    } catch (e) {
-      print(e.toString());
     } finally {
       await helper.close();
     }
@@ -31,8 +29,6 @@ class PartDao {
       await helper.open();
 
       result = await helper.getList();
-    } catch (e) {
-      print(e.toString());
     } finally {
       await helper.close();
     }

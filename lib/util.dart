@@ -1,0 +1,1 @@
+bool intToBool(int a) => a == 0 ? false : true;

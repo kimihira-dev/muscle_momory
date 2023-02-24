@@ -7,9 +7,21 @@ class Menu {
   String name = '';
   MenuType type = MenuType.free;
   List<Part> parts = [];
+  bool weightFlg = false;
+  bool countFlg = false;
+  bool timeFlg = false;
 
   /// コンストラクタ
-  Menu(this._id, this.name, this.type, this.parts);
+  Menu(
+    this._id,
+    this.name,
+    this.type,
+    this.weightFlg,
+    this.countFlg,
+    this.timeFlg,
+    this.parts,
+  );
+
   /// 空データ用コンストラクタ
   Menu.empty();
 

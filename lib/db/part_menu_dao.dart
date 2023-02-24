@@ -19,8 +19,6 @@ class PartMenuDao {
       if (result == null) {
         await helper.insert(part_id, menu_id);
       }
-    } catch (e) {
-      print(e.toString());
     } finally {
       await helper.close();
     }
@@ -31,8 +29,6 @@ class PartMenuDao {
     try {
       await helper.open();
       await helper.deleteFromMenuId(menu_id);
-    } catch (e) {
-      print(e.toString());
     } finally {
       await helper.close();
     }
@@ -45,8 +41,6 @@ class PartMenuDao {
       await helper.open();
 
       result = await helper.getList(part_id: part_id, menu_id: menu_id);
-    } catch (e) {
-      print(e.toString());
     } finally {
       await helper.close();
     }

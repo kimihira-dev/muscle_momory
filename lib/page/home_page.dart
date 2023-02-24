@@ -40,10 +40,10 @@ class _HomePageState extends State<HomePage> {
           IconButton(onPressed: () {
             _factory.reCreate();
             _updateList();
-          }, icon: Icon(Icons.abc_sharp)),
+          }, icon: Icon(Icons.delete)),
           IconButton(onPressed: () {
             _factory.create();
-          }, icon: Icon(Icons.adb_outlined))
+          }, icon: Icon(Icons.filter_alt))
         ],
       ),
       body: ListView.builder(

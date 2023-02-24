@@ -15,7 +15,8 @@ class MenuEditPage extends StatefulWidget {
   const MenuEditPage(this.updateList, {super.key, this.menu, this.partId});
 
   @override
-  State<MenuEditPage> createState() => _MenuEditPageState(this.partId, this.menu);
+  State<MenuEditPage> createState() =>
+      _MenuEditPageState(this.partId, this.menu);
 }
 
 class _MenuEditPageState extends State<MenuEditPage> {
@@ -80,105 +81,142 @@ class _MenuEditPageState extends State<MenuEditPage> {
   Widget build(BuildContext context) {
     var body;
     if (_partList.isNotEmpty) {
-      body = Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(50.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                initialValue: menu_name,
-                decoration: const InputDecoration(labelText: '名前'),
-                validator: (value) {
-                  if (value != null && value.isEmpty) {
-                    return '必須です';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  menu_name = value;
-                },
-              ),
-              Text('単位'),
-              Wrap(
-                // list of length 3
-                children: List.generate(
-                  MenuType.values.length,
-                  (int index) {
-                    return ChoiceChip(
-                      label: Text(MenuType.values[index].name),
-                      selectedColor: Colors.green,
-                      selected: typeIndex == index,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          typeIndex = index;
-                        });
-                      },
-                    );
-                  },
-                ).toList(),
-              ),
-              Text('部位'),
-              Wrap(
-                children: List.generate(
-                  _partList.length,
-                  (int index) {
-                    return ChoiceChip(
-                      label: Text(_partList[index].name),
-                      selectedColor: Colors.green,
-                      selected: () {
-                        return _partIndexes.contains(index);
-                      }(),
-                      onSelected: (bool selected) {
-                        setState(() {
-                          if (selected) {
-                            _partIndexes.add(index);
-                          } else {
-                            if (_partIndexes.length > 1) {
-                              _partIndexes.remove(index);
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                    content: Text('１つ以上の部位を選択してください。'),
-                              backgroundColor: Colors.red.shade300,));
-                            }
-                          }
-                        });
-                      },
-                    );
-                  },
-                ).toList(),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    if (_partIndexes.length == 0) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(
-                        content: Text('１つ以上の部位を選択してください。'),
-                        backgroundColor: Colors.red.shade300,));
-                    } else {
-                      // 登録
-                      _menu.name = menu_name;
-                      _menu.type = MenuType.values[typeIndex];
-                      _menu.parts.clear();
-                      _partIndexes.forEach(
-                              (element) => _menu.parts.add(_partList[element]));
-                      await _menuDao.save(_menu);
-                      // 一覧画面更新
-                      widget.updateList();
-                      // 一覧に戻る
-                      Navigator.pop(context);
-                      // メッセージ
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text('$_mode_nameしました')));
+      body = SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(50.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  initialValue: menu_name,
+                  decoration: const InputDecoration(labelText: '名前'),
+                  validator: (value) {
+                    if (value != null && value.isEmpty) {
+                      return '必須です';
                     }
-                  }
-                },
-                child: Text(_mode_name),
-              ),
-            ],
+                    return null;
+                  },
+                  onChanged: (value) {
+                    menu_name = value;
+                  },
+                ),
+                Text('種別'),
+                Wrap(
+                  // list of length 3
+                  children: List.generate(
+                    MenuType.values.length,
+                    (int index) {
+                      return ChoiceChip(
+                        label: Text(MenuType.values[index].name),
+                        selectedColor: Colors.green,
+                        selected: typeIndex == index,
+                        onSelected: (bool selected) {
+                          setState(() {
+                            typeIndex = index;
+                          });
+                        },
+                      );
+                    },
+                  ).toList(),
+                ),
+                Text('部位'),
+                Wrap(
+                  children: List.generate(
+                    _partList.length,
+                    (int index) {
+                      return ChoiceChip(
+                        label: Text(_partList[index].name),
+                        selectedColor: Colors.green,
+                        selected: () {
+                          return _partIndexes.contains(index);
+                        }(),
+                        onSelected: (bool selected) {
+                          setState(() {
+                            if (selected) {
+                              _partIndexes.add(index);
+                            } else {
+                              if (_partIndexes.length > 1) {
+                                _partIndexes.remove(index);
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text('１つ以上の部位を選択してください。'),
+                                  backgroundColor: Colors.red.shade300,
+                                ));
+                              }
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ).toList(),
+                ),
+                Row(
+                  children: [
+                    Text('重量'),
+                    Switch.adaptive(
+                      value: _menu.weightFlg,
+                      onChanged: (bool value) {
+                        setState(() => _menu.weightFlg = value);
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text('回数'),
+                    Switch.adaptive(
+                      value: _menu.countFlg,
+                      onChanged: (bool value) {
+                        setState(() => _menu.countFlg = value);
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text('時間'),
+                    Switch.adaptive(
+                      value: _menu.timeFlg,
+                      onChanged: (bool value) {
+                        setState(() => _menu.timeFlg = value);
+                      },
+                    ),
+                  ],
+                ),
+
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      if (_partIndexes.length == 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('１つ以上の部位を選択してください。'),
+                          backgroundColor: Colors.red.shade300,
+                        ));
+                      } else {
+                        // 登録
+                        _menu.name = menu_name;
+                        _menu.type = MenuType.values[typeIndex];
+                        _menu.parts.clear();
+                        _partIndexes.forEach(
+                            (element) => _menu.parts.add(_partList[element]));
+                        await _menuDao.save(_menu);
+                        // 一覧画面更新
+                        widget.updateList();
+                        // 一覧に戻る
+                        Navigator.pop(context);
+                        // メッセージ
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('$_mode_nameしました')));
+                      }
+                    }
+                  },
+                  child: Text(_mode_name),
+                ),
+              ],
+            ),
           ),
         ),
       );

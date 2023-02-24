@@ -24,8 +24,16 @@ class _MenuListPageState extends State<MenuListPage> {
   }
 
   Future<void> _updateList() async {
-    DbFactory factory = DbFactory();
-    menuList = await MenuDao(factory).getList();
+    var factory = DbFactory();
+    try {
+      menuList = await MenuDao(factory).getList();
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(
+        content: Text('データの取得に失敗しました。'),
+        backgroundColor: Colors.red.shade300,));
+      rethrow;
+    }
     setState(() {
 
     });

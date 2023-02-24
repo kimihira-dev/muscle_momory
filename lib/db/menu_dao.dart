@@ -2,6 +2,7 @@ import 'package:muscle_memory/db/db_factory.dart';
 import 'package:muscle_memory/db/part_dao.dart';
 import 'package:muscle_memory/db/part_menu_dao.dart';
 import 'package:muscle_memory/entity/menu.dart';
+import 'package:muscle_memory/util.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../const.dart';
@@ -61,8 +62,6 @@ class MenuDao {
               await partDao.find(partMenu[PartMenuDaoHelper.columnPartId]));
         });
       });
-    } catch (e) {
-      print(e.toString());
     } finally {
       await helper.close();
     }
@@ -77,7 +76,10 @@ class MenuDaoHelper {
   static const columnId = 'id';
   static const columnName = 'name';
   static const columnType = 'type';
-  static const columns = [columnId, columnName, columnName, columnType];
+  static const columnWeightFlg = 'weightFlg';
+  static const columnCountFlg = 'countFlg';
+  static const columnTimeFlg = 'timeFlg';
+  static const columns = [columnId, columnName, columnName, columnType, columnWeightFlg, columnCountFlg, columnTimeFlg];
 
   final DbFactory _factory;
   late Database _db;
@@ -88,6 +90,9 @@ class MenuDaoHelper {
     return await _db.insert(tableName, {
       columnName: menu.name,
       columnType: menu.type.id,
+      columnWeightFlg: menu.weightFlg,
+      columnCountFlg: menu.countFlg,
+      columnTimeFlg: menu.timeFlg,
     });
   }
 
@@ -97,6 +102,9 @@ class MenuDaoHelper {
         {
           columnName: menu.name,
           columnType: menu.type.id,
+          columnWeightFlg: menu.weightFlg,
+          columnCountFlg: menu.countFlg,
+          columnTimeFlg: menu.timeFlg,
         },
         where: '$columnId = ?',
         whereArgs: [menu.id]);
@@ -107,8 +115,7 @@ class MenuDaoHelper {
         columns: columns, where: '$columnId = ?', whereArgs: [id]);
 
     if (maps.isNotEmpty) {
-      return Menu(maps.first[columnId], maps.first[columnName],
-          MenuType.fromId(maps.first[columnType]), []);
+      return convertToEntity(maps.first);
     }
     return null;
   }
@@ -120,11 +127,20 @@ class MenuDaoHelper {
     if (maps.isNotEmpty) {
       maps.forEach((element) {
         // 部位を取得
-        result.add(Menu(element[columnId], element[columnName],
-            MenuType.fromId(element[columnType]), []));
+        result.add(convertToEntity(element));
       });
     }
     return result;
+  }
+
+  Menu convertToEntity(Map data) {
+    return Menu(
+        data[columnId],
+        data[columnName],
+        MenuType.fromId(data[columnType]),
+        intToBool(data[columnWeightFlg]),
+        intToBool(data[columnCountFlg]),
+        intToBool(data[columnTimeFlg]), []);
   }
 
   Future<void> close() async => _db.close();
