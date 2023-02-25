@@ -10,6 +10,8 @@ class Menu {
   bool weightFlg = false;
   bool countFlg = false;
   bool timeFlg = false;
+  DateTime? createAt;
+  DateTime? updateAt;
 
   /// コンストラクタ
   Menu(

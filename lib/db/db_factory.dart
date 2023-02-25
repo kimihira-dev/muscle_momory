@@ -19,10 +19,11 @@ class DbFactory {
         ${PartDaoHelper.columnId} integer primary key autoincrement,
         ${PartDaoHelper.columnName} text,
         ${PartDaoHelper.columnRecoveryTime} int,
-        ${PartDaoHelper.columnCreateDate} DATETIME,
-        ${PartDaoHelper.columnUpdateDate} DATETIME
+        ${PartDaoHelper.columnCreateDate} TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
+        ${PartDaoHelper.columnUpdateDate} TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime'))
         );
       ''');
+      await db.execute(generateUpdateTriggerSQL(PartDaoHelper.tableName));
       await db.execute('''
       create table ${MenuDaoHelper.tableName} (
         ${MenuDaoHelper.columnId} integer primary key autoincrement,
@@ -30,9 +31,12 @@ class DbFactory {
         ${MenuDaoHelper.columnType} int,
         ${MenuDaoHelper.columnWeightFlg} boolean,
         ${MenuDaoHelper.columnCountFlg} boolean,
-        ${MenuDaoHelper.columnTimeFlg} boolean
+        ${MenuDaoHelper.columnTimeFlg} boolean,
+        ${MenuDaoHelper.columnCreateDate} TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
+        ${MenuDaoHelper.columnUpdateDate} TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime'))
         );
       ''');
+      await db.execute(generateUpdateTriggerSQL(MenuDaoHelper.tableName));
       await db.execute('''
       create table ${PartMenuDaoHelper.tableName} (
         ${PartMenuDaoHelper.columnPartId} integer,
@@ -55,6 +59,15 @@ class DbFactory {
        ;
       ''');
     });
+  }
+
+  String generateUpdateTriggerSQL(tableName) {
+    return '''
+      CREATE TRIGGER tri_update_$tableName AFTER UPDATE ON $tableName 
+      BEGIN
+        UPDATE $tableName SET update_at = datetime(CURRENT_TIMESTAMP, 'localtime');
+      END;
+      ''';
   }
 
   Future<Database> reCreate() async {

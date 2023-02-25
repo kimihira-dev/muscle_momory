@@ -51,7 +51,7 @@ class PartMenuDao {
 
 class PartMenuDaoHelper {
   // テーブル
-  static const tableName = 'part_menu';
+  static const tableName = 'parts_menus';
   static const columnPartId = 'part_id';
   static const columnMenuId = 'menu_id';
 

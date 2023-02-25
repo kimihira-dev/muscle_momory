@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Muscle Memory',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.grey,
       ),
       home: const HomePage(title: 'Muscle Memory'),
     );

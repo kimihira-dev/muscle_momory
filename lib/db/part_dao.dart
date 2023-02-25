@@ -38,13 +38,13 @@ class PartDao {
 }
 
 class PartDaoHelper {
-  static const tableName = 'part';
+  static const tableName = 'parts';
 
   static const columnId = 'id';
   static const columnName = 'name';
   static const columnRecoveryTime = 'recovery_time';
-  static const columnCreateDate = 'create_date';
-  static const columnUpdateDate = 'update_date';
+  static const columnCreateDate = 'create_at';
+  static const columnUpdateDate = 'update_at';
 
   static const columns = [
     columnId, columnName, columnRecoveryTime, columnCreateDate, columnUpdateDate
@@ -61,13 +61,7 @@ class PartDaoHelper {
         whereArgs: [id]);
 
     if (maps.isNotEmpty) {
-      return Part(
-        maps.first[columnId],
-        maps.first[columnName],
-        maps.first[columnRecoveryTime],
-        maps.first[columnCreateDate],
-        maps.first[columnUpdateDate],
-      );
+      return convertToEntity(maps.first);
     }
     return null;
   }
@@ -78,17 +72,21 @@ class PartDaoHelper {
 
     if (maps.isNotEmpty) {
       maps.forEach((element) {
-        result.add(Part(
-          element[columnId],
-          element[columnName],
-          element[columnRecoveryTime],
-          element[columnCreateDate],
-          element[columnUpdateDate],
-        ));
+        result.add(convertToEntity(element));
       });
     }
 
     return result;
+  }
+
+  Part convertToEntity(Map data) {
+    return Part(
+      data[columnId],
+      data[columnName],
+      data[columnRecoveryTime],
+      DateTime.parse(data[columnCreateDate]),
+      DateTime.parse(data[columnUpdateDate]),
+    );
   }
 
   Future<void> close() async => _db.close();

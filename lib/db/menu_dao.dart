@@ -72,14 +72,26 @@ class MenuDao {
 
 class MenuDaoHelper {
   // テーブル
-  static const tableName = 'menu';
+  static const tableName = 'menus';
   static const columnId = 'id';
   static const columnName = 'name';
   static const columnType = 'type';
-  static const columnWeightFlg = 'weightFlg';
-  static const columnCountFlg = 'countFlg';
-  static const columnTimeFlg = 'timeFlg';
-  static const columns = [columnId, columnName, columnName, columnType, columnWeightFlg, columnCountFlg, columnTimeFlg];
+  static const columnWeightFlg = 'weight_flg';
+  static const columnCountFlg = 'count_flg';
+  static const columnTimeFlg = 'time_flg';
+  static const columnCreateDate = 'create_at';
+  static const columnUpdateDate = 'update_at';
+  static const columns = [
+    columnId,
+    columnName,
+    columnName,
+    columnType,
+    columnWeightFlg,
+    columnCountFlg,
+    columnTimeFlg,
+    columnCreateDate,
+    columnUpdateDate
+  ];
 
   final DbFactory _factory;
   late Database _db;
@@ -87,13 +99,9 @@ class MenuDaoHelper {
   MenuDaoHelper(this._factory);
 
   Future<int> insert(Menu menu) async {
-    return await _db.insert(tableName, {
-      columnName: menu.name,
-      columnType: menu.type.id,
-      columnWeightFlg: menu.weightFlg,
-      columnCountFlg: menu.countFlg,
-      columnTimeFlg: menu.timeFlg,
-    });
+    var data = convertToMap(menu);
+    // data[columnCreateDate] = 'datetime(now)';
+    return await _db.insert(tableName, data);
   }
 
   Future<void> update(Menu menu) async {
@@ -141,6 +149,16 @@ class MenuDaoHelper {
         intToBool(data[columnWeightFlg]),
         intToBool(data[columnCountFlg]),
         intToBool(data[columnTimeFlg]), []);
+  }
+
+  Map<String, Object> convertToMap(Menu menu) {
+    return {
+      columnName: menu.name,
+      columnType: menu.type.id,
+      columnWeightFlg: menu.weightFlg,
+      columnCountFlg: menu.countFlg,
+      columnTimeFlg: menu.timeFlg,
+    };
   }
 
   Future<void> close() async => _db.close();
