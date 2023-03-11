@@ -100,20 +100,13 @@ class MenuDaoHelper {
 
   Future<int> insert(Menu menu) async {
     var data = convertToMap(menu);
-    // data[columnCreateDate] = 'datetime(now)';
     return await _db.insert(tableName, data);
   }
 
   Future<void> update(Menu menu) async {
     await _db.update(
         tableName,
-        {
-          columnName: menu.name,
-          columnType: menu.type.id,
-          columnWeightFlg: menu.weightFlg,
-          columnCountFlg: menu.countFlg,
-          columnTimeFlg: menu.timeFlg,
-        },
+        convertToMap(menu),
         where: '$columnId = ?',
         whereArgs: [menu.id]);
   }
