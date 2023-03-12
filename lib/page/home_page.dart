@@ -36,6 +36,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        centerTitle: true,
         actions: [
           IconButton(onPressed: () {
             _factory.reCreate();

@@ -102,32 +102,51 @@ class _WorkoutPageState extends State<WorkoutPage> {
         inputRow.children.add(Text('回'));
       }
 
-      inputRow.children.add(IconButton(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              // 新規ログを登録
-              if (_workoutLog == null) {
-                _workoutLog = WorkoutLog.empty(_menu.id!);
-                var workoutLog_id = await _workoutLogDao.save(_workoutLog);
-                _workoutLog = await _workoutLogDao.find(workoutLog_id);
-              }
-              // セットを登録
-              var workoutLogSet;
-              if (_editWorkoutLogSet != null) {
-                workoutLogSet = _editWorkoutLogSet;
-                _editWorkoutLogSet = null;
-              } else {
-                workoutLogSet = WorkoutLogSet.empty(_workoutLog.id);
-              }
+      inputRow.children.add(Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Container(
+          width: 48,
+          height: 48,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(16.0),
+              ),
+              border: Border.all(color: Colors.grey.withOpacity(0.2)),
+            ),
+            child: IconButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  // 新規ログを登録
+                  if (_workoutLog == null) {
+                    _workoutLog = WorkoutLog.empty(_menu.id!);
+                    var workoutLog_id = await _workoutLogDao.save(_workoutLog);
+                    _workoutLog = await _workoutLogDao.find(workoutLog_id);
+                  }
+                  // セットを登録
+                  var workoutLogSet;
+                  if (_editWorkoutLogSet != null) {
+                    workoutLogSet = _editWorkoutLogSet;
+                    _editWorkoutLogSet = null;
+                  } else {
+                    workoutLogSet = WorkoutLogSet.empty(_workoutLog.id);
+                  }
 
-              workoutLogSet.weight = double.parse(_weightController.text);
-              workoutLogSet.count = int.parse(_countController.text);
-              await _workoutLogSetDao.save(workoutLogSet);
-              // リストを更新
-              await getWorkoutLogSet();
-            }
-          },
-          icon: Icon(Icons.upload)));
+                  workoutLogSet.weight = double.parse(_weightController.text);
+                  workoutLogSet.count = int.parse(_countController.text);
+                  await _workoutLogSetDao.save(workoutLogSet);
+                  // リストを更新
+                  await getWorkoutLogSet();
+                }
+              },
+              icon: Icon(
+                Icons.add,
+                size: 28,
+              ),
+            ),
+          ),
+        ),
+      ));
 
       body = Padding(
         padding: const EdgeInsets.all(20.0),
@@ -205,6 +224,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(_menu.name),
       ),
       body: body,
