@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: materialWhite,
       ),
       darkTheme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
       home: const HomePage(title: 'Muscle Memory'),
     );
   }

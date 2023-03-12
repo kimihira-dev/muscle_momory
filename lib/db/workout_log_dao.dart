@@ -3,6 +3,7 @@ import 'package:muscle_memory/entity/menu.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../entity/workout_log.dart';
+import '../util.dart';
 
 class WorkoutLogDao {
   final DbFactory factory;
@@ -35,12 +36,12 @@ class WorkoutLogDao {
     return result;
   }
 
-  Future<List<WorkoutLog>> getList() async {
+  Future<List<WorkoutLog>> getList({int? menu_id}) async {
     var helper = WorkoutLogDaoHelper(factory);
     var result;
     try {
       await helper.open();
-      result = await helper.getList();
+      result = await helper.getList(menu_id);
     } finally {
       await helper.close();
     }
@@ -102,11 +103,8 @@ class WorkoutLogDaoHelper {
   }
 
   Future<void> update(WorkoutLog entity) async {
-    await _db.update(
-        tableName,
-        convertToMap(entity),
-        where: '$columnId = ?',
-        whereArgs: [entity.id]);
+    await _db.update(tableName, convertToMap(entity),
+        where: '$columnId = ?', whereArgs: [entity.id]);
   }
 
   Future<WorkoutLog?> fetch(int id) async {
@@ -124,7 +122,8 @@ class WorkoutLogDaoHelper {
         columns: columns,
         where: '$columnMenuId = ?',
         whereArgs: [menu_id],
-        orderBy: '$columnId DESC', limit: 1);
+        orderBy: '$columnId DESC',
+        limit: 1);
 
     if (maps.isNotEmpty) {
       return convertToEntity(maps.first);
@@ -132,9 +131,17 @@ class WorkoutLogDaoHelper {
     return null;
   }
 
-  Future<List<WorkoutLog>> getList() async {
+  Future<List<WorkoutLog>> getList(int? menu_id) async {
     var result = <WorkoutLog>[];
-    List<Map> maps = await _db.query(tableName, columns: columns);
+
+    var where = '';
+    var whereArgs = [];
+    if (menu_id != null) {
+      where += '$columnMenuId = ?';
+      whereArgs.add(menu_id);
+    }
+    List<Map> maps = await _db.query(tableName,
+        columns: convertSelectColumns(columns), where: where, whereArgs: whereArgs, orderBy: 'id DESC');
 
     if (maps.isNotEmpty) {
       maps.forEach((data) {

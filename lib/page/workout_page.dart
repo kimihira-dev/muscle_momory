@@ -9,21 +9,23 @@ import 'package:muscle_memory/input/decimal_text_input_formatter.dart';
 
 import '../entity/workout_log.dart';
 import '../util.dart';
+import 'hisotry_page.dart';
 
 class WorkoutPage extends StatefulWidget {
   final Menu menu;
+  final WorkoutLog? workoutLog;
 
-  const WorkoutPage(this.menu, {super.key});
+  const WorkoutPage(this.menu, {super.key, this.workoutLog});
 
   @override
-  State<WorkoutPage> createState() => _WorkoutPageState(menu);
+  State<WorkoutPage> createState() => _WorkoutPageState(menu, workoutLog: workoutLog);
 }
 
 class _WorkoutPageState extends State<WorkoutPage> {
   final _scaffoldKey = GlobalKey();
   final _formKey = GlobalKey<FormState>();
   final Menu _menu;
-  var _workoutLog;
+  var workoutLog;
   var _workoutLogSetList;
   WorkoutLogSet? _editWorkoutLogSet;
   final TextEditingController _countController = TextEditingController();
@@ -33,24 +35,28 @@ class _WorkoutPageState extends State<WorkoutPage> {
   late WorkoutLogDao _workoutLogDao;
   late WorkoutLogSetDao _workoutLogSetDao;
 
-  _WorkoutPageState(this._menu) {
+  _WorkoutPageState(this._menu, {this.workoutLog}) {
     _workoutLogDao = WorkoutLogDao(_factory);
     _workoutLogSetDao = WorkoutLogSetDao(_factory);
     _init();
   }
 
   Future<void> _init() async {
-    var workoutLog = await _workoutLogDao.findLatest(_menu.id!);
-    if (workoutLog != null &&
-        isSameDay(workoutLog.createDate!, DateTime.now())) {
-      _workoutLog = workoutLog;
+    var tmpWorkoutLog;
+    if (workoutLog == null) {
+      tmpWorkoutLog = await _workoutLogDao.findLatest(_menu.id!);
+    }
+
+    if (tmpWorkoutLog != null &&
+        isSameDay(tmpWorkoutLog.createDate!, DateTime.now())) {
+      workoutLog = tmpWorkoutLog;
     }
     await getWorkoutLogSet();
   }
 
   Future<void> getWorkoutLogSet() async {
-    if (_workoutLog != null) {
-      _workoutLogSetList = await _workoutLogSetDao.getList(_workoutLog.id);
+    if (workoutLog != null) {
+      _workoutLogSetList = await _workoutLogSetDao.getList(workoutLog.id);
     } else {
       _workoutLogSetList = [];
     }
@@ -118,10 +124,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   // 新規ログを登録
-                  if (_workoutLog == null) {
-                    _workoutLog = WorkoutLog.empty(_menu.id!);
-                    var workoutLog_id = await _workoutLogDao.save(_workoutLog);
-                    _workoutLog = await _workoutLogDao.find(workoutLog_id);
+                  if (workoutLog == null) {
+                    workoutLog = WorkoutLog.empty(_menu.id!);
+                    var workoutLog_id = await _workoutLogDao.save(workoutLog);
+                    workoutLog = await _workoutLogDao.find(workoutLog_id);
                   }
                   // セットを登録
                   var workoutLogSet;
@@ -129,7 +135,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     workoutLogSet = _editWorkoutLogSet;
                     _editWorkoutLogSet = null;
                   } else {
-                    workoutLogSet = WorkoutLogSet.empty(_workoutLog.id);
+                    workoutLogSet = WorkoutLogSet.empty(workoutLog.id);
                   }
 
                   workoutLogSet.weight = double.parse(_weightController.text);
@@ -174,13 +180,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           }
                           return Text(displayText);
                         }(_workoutLogSetList[index]),
-                        tileColor: () {
-                          var result = Colors.white;
-                          if (_editWorkoutLogSet == _workoutLogSetList[index]) {
-                            result = Colors.blue.shade100;
-                          }
-                          return result;
-                        }(),
+                        selected: _editWorkoutLogSet == _workoutLogSetList[index],
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -226,6 +226,11 @@ class _WorkoutPageState extends State<WorkoutPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(_menu.name),
+        actions: [
+          IconButton(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context)  => HistoryPage(_menu)));
+          }, icon: Icon(Icons.history)),
+        ],
       ),
       body: body,
     );
